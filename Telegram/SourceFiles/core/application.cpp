@@ -60,6 +60,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/crash_reports.h"
 #include "main/main_account.h"
 #include "main/main_domain.h"
+#include "prime/tgws/tgws_manager.h"
 #include "main/main_session.h"
 #include "media/view/media_view_overlay_widget.h"
 #include "media/view/media_view_open_common.h"
@@ -156,6 +157,7 @@ struct Application::Private {
 	UiIntegration uiIntegration;
 	Settings settings;
 	std::unique_ptr<ProxyRotationManager> proxyRotation;
+	std::unique_ptr<Prime::TgWs::Manager> tgws;
 };
 
 Application::Application()
@@ -185,6 +187,7 @@ Application::Application()
 , _autoLockTimer([=] { checkAutoLock(); }) {
 	Ui::Integration::Set(&_private->uiIntegration);
 	_private->proxyRotation = std::make_unique<ProxyRotationManager>();
+	_private->tgws = std::make_unique<Prime::TgWs::Manager>();
 
 	_platformIntegration->init();
 
@@ -283,6 +286,7 @@ Application::~Application() {
 
 	_private->proxyRotation = nullptr;
 	_domain->finish();
+	_private->tgws = nullptr;
 	MTP::WebProxy::Transport::Shutdown();
 
 	Local::finish();
@@ -319,7 +323,8 @@ void Application::run() {
 
 	ValidateScale();
 
-	refreshGlobalProxy(); // Depends on app settings being read.
+	_private->tgws->start(); // Depends on app settings being read.
+	refreshGlobalProxy();
 
 	if (const auto old = Local::oldSettingsVersion(); old < AppVersion) {
 		autoRegisterUrlScheme();
@@ -837,6 +842,10 @@ bool Application::eventFilter(QObject *object, QEvent *e) {
 	}
 
 	return QObject::eventFilter(object, e);
+}
+
+Prime::TgWs::Manager &Application::tgws() {
+	return *_private->tgws;
 }
 
 Settings &Application::settings() {

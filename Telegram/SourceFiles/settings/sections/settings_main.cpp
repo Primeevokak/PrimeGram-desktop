@@ -6,6 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_main.h"
+#include "settings/sections/settings_prime_tgws.h"
+#include "prime/prime_text.h"
 
 #include "settings/settings_common_session.h"
 
@@ -439,6 +441,13 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.targetSection = AdvancedId(),
 		.icon = { &st::menuIconManage },
 		.keywords = { u"performance"_q, u"proxy"_q, u"experimental"_q },
+	});
+
+	builder.addSectionButton({
+		.title = Prime::TextValue("PrimeGram TgWs", "PrimeGram TgWs"),
+		.targetSection = PrimeTgWs::Id(),
+		.icon = { &st::menuIconNetwork },
+		.keywords = { u"tgws"_q, u"proxy"_q, u"primegram"_q, u"vpn"_q },
 	});
 
 	builder.addSectionButton({

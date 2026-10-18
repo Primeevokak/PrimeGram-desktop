@@ -18,6 +18,10 @@ namespace base {
 class BatterySaving;
 } // namespace base
 
+namespace Prime::TgWs {
+class Manager;
+} // namespace Prime::TgWs
+
 namespace Platform {
 class Integration;
 } // namespace Platform
@@ -221,6 +225,7 @@ public:
 
 	void startSettingsAndBackground();
 	[[nodiscard]] Settings &settings();
+	[[nodiscard]] Prime::TgWs::Manager &tgws();
 	[[nodiscard]] const Settings &settings() const;
 	void saveSettingsDelayed(crl::time delay = kDefaultSaveDelay);
 	void saveSettings();

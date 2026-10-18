@@ -13,6 +13,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/qthelp_url.h"
 #include "base/weak_ptr.h"
 #include "core/application.h"
+#include "prime/tgws/tgws_manager.h"
 #include "core/core_settings.h"
 #include "core/local_url_handlers.h"
 #include "lang/lang_keys.h"
@@ -812,9 +813,13 @@ void ProxyRow::updateFields(View &&view) {
 	_title.setMarkedText(
 		st::proxyRowTitleStyle,
 		TextWithEntities()
-			.append(_view.type)
+			.append(_view.managed ? u"TgWs"_q : _view.type)
 			.append(' ')
-			.append(tr::link(endpoint, QString())),
+			.append(tr::link(
+				_view.managed
+					? (u"PrimeGram · "_q + endpoint)
+					: endpoint,
+				QString())),
 		Ui::ItemTextDefaultOptions());
 
 	const auto state = _view.state;
@@ -2600,6 +2605,7 @@ void ProxiesBoxController::updateView(const Item &item) {
 			&& (state == ItemState::WaitingForBrowser
 				|| state == ItemState::Unavailable),
 		state,
+		Core::App().tgws().isManaged(item.data),
 	});
 }
 

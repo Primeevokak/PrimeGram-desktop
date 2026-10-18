@@ -94,6 +94,10 @@ This atlas divides Telegram Desktop's sources into named areas, ordered from fou
 - Paths: `SourceFiles/mtproto/`, `SourceFiles/tde2e/`
 - DC options and config, auth keys, sessions and resending, TCP, HTTP and TLS connections, proxies and checks, special-config fallback, dedicated loaders, the TL schemes and the tde2e end-to-end binding. It knows nothing about messages, peers or UI.
 
+### prime/tgws — PrimeGram WebSocket transport
+- Paths: `SourceFiles/prime/`, `SourceFiles/settings/sections/settings_prime_tgws*`
+- The built-in TgWs tunnel: a local MTProxy on 127.0.0.1 that reaches Telegram datacenters over WebSockets (`tgws_engine`, `tgws_session`, `tgws_ws_client`, crypto and framing), and `Manager`, which keeps its settings and its entry in the proxy list in step; the PrimeGram text helper `prime_text.h`. It must not own MTProto sessions, the generic proxy list or Telegram API logic.
+
 ### storage/local — encrypted local persistence
 - Paths: `SourceFiles/storage/storage_account*`, `SourceFiles/storage/storage_domain*`, `SourceFiles/storage/localstorage*`, `SourceFiles/storage/details/`, `SourceFiles/storage/serialize_*`, `SourceFiles/storage/storage_file_lock*`
 - The tdata of accounts and the domain, the settings scheme, serializers and file locks. It must not own file transfer.

@@ -1709,6 +1709,33 @@ PRIVATE
     poll/poll_link_thumbnail.h
     poll/poll_media_upload.cpp
     poll/poll_media_upload.h
+    prime/prime_cover.cpp
+    prime/prime_cover.h
+    prime/prime_text.h
+    prime/tgws/tgws_balancer.cpp
+    prime/tgws/tgws_balancer.h
+    prime/tgws/tgws_constants.cpp
+    prime/tgws/tgws_constants.h
+    prime/tgws/tgws_context.cpp
+    prime/tgws/tgws_context.h
+    prime/tgws/tgws_crypto.cpp
+    prime/tgws/tgws_crypto.h
+    prime/tgws/tgws_engine.cpp
+    prime/tgws/tgws_engine.h
+    prime/tgws/tgws_fetch.cpp
+    prime/tgws/tgws_fetch.h
+    prime/tgws/tgws_link.cpp
+    prime/tgws/tgws_link.h
+    prime/tgws/tgws_manager.cpp
+    prime/tgws/tgws_manager.h
+    prime/tgws/tgws_session.cpp
+    prime/tgws/tgws_session.h
+    prime/tgws/tgws_splitter.cpp
+    prime/tgws/tgws_splitter.h
+    prime/tgws/tgws_ws_client.cpp
+    prime/tgws/tgws_ws_client.h
+    prime/tgws/tgws_ws_frame.cpp
+    prime/tgws/tgws_ws_frame.h
     passport/passport_encryption.cpp
     passport/passport_encryption.h
     passport/passport_form_controller.cpp
@@ -1941,6 +1968,8 @@ PRIVATE
     settings/settings_builder.h
     settings/sections/settings_notifications.cpp
     settings/sections/settings_notifications.h
+    settings/sections/settings_prime_tgws.cpp
+    settings/sections/settings_prime_tgws.h
     settings/sections/settings_privacy_security.cpp
     settings/sections/settings_privacy_security.h
     settings/sections/settings_notifications_reactions.cpp

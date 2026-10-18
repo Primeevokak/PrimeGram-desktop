@@ -78,6 +78,7 @@ public:
 		bool web = false;
 		bool canOpenBrowser = false;
 		ItemState state = ItemState::Checking;
+		bool managed = false;
 
 	};
 
