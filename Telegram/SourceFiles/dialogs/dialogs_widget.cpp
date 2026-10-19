@@ -102,6 +102,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_info.h"
 #include "styles/style_window.h"
 #include "base/qt/qt_common_adapters.h"
+#include "prime/search/identity_search.h"
 
 #include <QtCore/QMimeData>
 #include <QtGui/QTextBlock>
@@ -3273,6 +3274,7 @@ bool Widget::search(bool inCache, SearchRequestDelay delay) {
 		_peerSearch.clear();
 		peerSearchReceived({});
 	}
+	primeResolve(query);
 	const auto peerQuery = Api::ConvertPeerSearchQuery(query);
 	if (searchForTopicsRequired(peerQuery)) {
 		if (inCache) {
@@ -3749,7 +3751,38 @@ void Widget::searchReceived(
 	update();
 }
 
+void Widget::primeResolve(const QString &query) {
+	_primeFound = nullptr;
+	_primeFoundQuery = QString();
+	const auto parsed = Prime::IdentitySearch::Parse(query);
+	if (parsed.kind == Prime::IdentitySearch::Kind::None) {
+		return;
+	}
+	const auto guard = base::make_weak(this);
+	Prime::IdentitySearch::Resolve(
+		&session(),
+		parsed,
+		[=](PeerData *peer) {
+			if (!guard || !peer || _searchQuery != query) {
+				return;
+			}
+			_primeFound = peer;
+			_primeFoundQuery = query;
+			peerSearchReceived(_primeLastResult);
+		});
+}
+
 void Widget::peerSearchReceived(Api::PeerSearchResult result) {
+	_primeLastResult = result;
+	if (_primeFound && _primeFoundQuery == _searchQuery) {
+		const auto found = not_null<PeerData*>(_primeFound);
+		const auto has = [&](const auto &list) {
+			return ranges::contains(list, found);
+		};
+		if (!has(result.my) && !has(result.peers)) {
+			result.my.insert(result.my.begin(), found);
+		}
+	}
 	_inner->peerSearchReceived(std::move(result));
 	listScrollUpdated();
 	update();

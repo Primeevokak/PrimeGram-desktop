@@ -11,6 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "boxes/peers/edit_peer_permissions_box.h"
 #include "boxes/premium_limits_box.h" // FileSizeLimitBox.
 #include "chat_helpers/compose/compose_show.h"
+#include "core/application.h"
 #include "data/data_chat.h"
 #include "data/data_channel.h"
 #include "data/data_forum_topic.h"
@@ -18,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_user.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
+#include "prime/bigfile/bigfile_manager.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/chat/attach/attach_prepare.h"
 #include "ui/layers/generic_box.h"
@@ -602,6 +604,10 @@ bool ShowSendError(
 			list.files,
 			{},
 			&Ui::PreparedFile::size);
+		if (max != list.files.end()
+			&& Core::App().bigFile().trySend(peer, max->path)) {
+			return true;
+		}
 		const auto session = &show->session();
 		show->show(Box(FileSizeLimitBox, session, max->size, nullptr));
 		return true;

@@ -17,6 +17,7 @@ add_subdirectory(lib_storage)
 add_subdirectory(lib_lottie)
 add_subdirectory(lib_qr)
 add_subdirectory(lib_translate)
+add_subdirectory(ThirdParty/whisper)
 add_subdirectory(lib_webrtc)
 add_subdirectory(lib_webview)
 add_subdirectory(codegen)
@@ -72,6 +73,7 @@ set_target_properties(Telegram PROPERTIES AUTOMOC ON)
 
 target_link_libraries(Telegram
 PRIVATE
+    desktop-app::external_whisper
     tdesktop::lib_fido2
     tdesktop::lib_tgcalls
     tdesktop::td_export
@@ -1709,9 +1711,37 @@ PRIVATE
     poll/poll_link_thumbnail.h
     poll/poll_media_upload.cpp
     poll/poll_media_upload.h
+    prime/autodelete/autodelete_manager.cpp
+    prime/autodelete/autodelete_manager.h
+    prime/bigfile/bigfile_assembler.cpp
+    prime/bigfile/bigfile_assembler.h
+    prime/bigfile/bigfile_format.cpp
+    prime/bigfile/bigfile_format.h
+    prime/bigfile/bigfile_manager.cpp
+    prime/bigfile/bigfile_manager.h
+    prime/prime_hub.h
+    prime/prime_prefs.h
+    prime/prime_session.h
+    prime/prime_store.h
+    prime/prime_banner.cpp
+    prime/prime_banner.h
+    prime/prime_boxes.cpp
+    prime/prime_boxes.h
     prime/prime_cover.cpp
     prime/prime_cover.h
     prime/prime_text.h
+    prime/search/identity_search.cpp
+    prime/search/identity_search.h
+    prime/tempsub/tempsub_manager.cpp
+    prime/tempsub/tempsub_manager.h
+    prime/whisper/whisper_audio.cpp
+    prime/whisper/whisper_audio.h
+    prime/whisper/whisper_engine.cpp
+    prime/whisper/whisper_engine.h
+    prime/whisper/whisper_manager.cpp
+    prime/whisper/whisper_manager.h
+    prime/whisper/whisper_models.cpp
+    prime/whisper/whisper_models.h
     prime/tgws/tgws_balancer.cpp
     prime/tgws/tgws_balancer.h
     prime/tgws/tgws_constants.cpp
@@ -1968,7 +1998,11 @@ PRIVATE
     settings/settings_builder.h
     settings/sections/settings_notifications.cpp
     settings/sections/settings_notifications.h
+    settings/sections/settings_prime.cpp
+    settings/sections/settings_prime.h
     settings/sections/settings_prime_tgws.cpp
+    settings/sections/settings_prime_voice.cpp
+    settings/sections/settings_prime_voice.h
     settings/sections/settings_prime_tgws.h
     settings/sections/settings_privacy_security.cpp
     settings/sections/settings_privacy_security.h

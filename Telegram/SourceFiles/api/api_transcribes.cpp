@@ -9,6 +9,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "apiwrap.h"
 #include "api/api_text_entities.h"
+#include "core/application.h"
+#include "data/data_media_types.h"
+#include "prime/prime_hub.h"
 #include "data/data_channel.h"
 #include "data/data_document.h"
 #include "data/data_peer.h"
@@ -56,6 +59,9 @@ void Transcribes::rate(not_null<HistoryItem*> item, bool isGood) {
 }
 
 bool Transcribes::freeFor(not_null<HistoryItem*> item) const {
+	if (Core::App().prime().whisper().available()) {
+		return true;
+	}
 	if (const auto channel = item->history()->peer->asMegagroup()) {
 		const auto owner = &channel->owner();
 		return channel->levelHint() >= owner->groupFreeTranscribeLevel();
@@ -64,6 +70,9 @@ bool Transcribes::freeFor(not_null<HistoryItem*> item) const {
 }
 
 bool Transcribes::trialsSupport() {
+	if (Core::App().prime().whisper().available()) {
+		return true;
+	}
 	if (!_trialsSupport) {
 		const auto count = _session->appConfig().get<int>(
 			u"transcribe_audio_trial_weekly_number"_q,
@@ -96,6 +105,9 @@ int Transcribes::trialsCount() {
 }
 
 crl::time Transcribes::trialsMaxLengthMs() const {
+	if (Core::App().prime().whisper().available()) {
+		return crl::time(60) * 60 * 1000;
+	}
 	return 1000 * _session->appConfig().get<int>(
 		u"transcribe_audio_trial_duration_max"_q,
 		300);
@@ -185,6 +197,10 @@ void Transcribes::load(not_null<HistoryItem*> item) {
 		}
 	};
 	const auto id = item->fullId();
+	if (Core::App().prime().whisper().available()) {
+		loadLocal(item);
+		return;
+	}
 	const auto requestId = _api.request(MTPmessages_TranscribeAudio(
 		item->history()->peer->input(),
 		MTP_int(item->id)
@@ -234,6 +250,48 @@ void Transcribes::load(not_null<HistoryItem*> item) {
 	entry.shown = true;
 	entry.failed = false;
 	entry.pending = false;
+}
+
+void Transcribes::loadLocal(not_null<HistoryItem*> item) {
+	constexpr auto kLocalRequest = mtpRequestId(1 << 30);
+	const auto id = item->fullId();
+	if (const auto media = item->media()) {
+		if (const auto document = media->document()) {
+			if (document->isVideoMessage()) {
+				_map[id].roundview = true;
+				document->owner().requestItemViewRefresh(item);
+			}
+		}
+	}
+	auto &entry = _map[id];
+	entry.requestId = kLocalRequest;
+	entry.shown = true;
+	entry.failed = false;
+	entry.pending = false;
+	entry.result = QString();
+	const auto refresh = [=] {
+		if (const auto item = _session->data().message(id)) {
+			_session->data().requestItemResize(item);
+		}
+	};
+	Core::App().prime().whisper().transcribe(item, [=](const QString &text) {
+		auto &entry = _map[id];
+		entry.result = text;
+		entry.pending = true;
+		refresh();
+	}, [=](const std::optional<QString> &text) {
+		auto &entry = _map[id];
+		entry.requestId = 0;
+		entry.pending = false;
+		if (text) {
+			entry.result = *text;
+			entry.failed = text->isEmpty();
+		} else {
+			entry.failed = true;
+		}
+		refresh();
+	});
+	refresh();
 }
 
 void Transcribes::summarize(not_null<HistoryItem*> item) {

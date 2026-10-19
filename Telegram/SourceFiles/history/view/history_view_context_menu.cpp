@@ -8,6 +8,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_context_menu.h"
 
 #include "api/api_attached_stickers.h"
+#include "prime/bigfile/bigfile_manager.h"
+#include "prime/prime_text.h"
 #include "api/api_editing.h"
 #include "api/api_global_privacy.h"
 #include "api/api_polls.h"
@@ -435,6 +437,13 @@ void AddDocumentActions(
 		not_null<DocumentData*> document,
 		HistoryItem *item,
 		not_null<ListWidget*> list) {
+	if (item && Prime::BigFile::Assembler::HeaderOf(item)) {
+		menu->addAction(Prime::Text(
+			"Download and assemble the file",
+			"Скачать и собрать файл"), [=] {
+			Core::App().bigFile().assembler().assemble(item);
+		}, &st::menuIconDownload);
+	}
 	if (document->loading()) {
 		menu->addAction(tr::lng_context_cancel_download(tr::now), [=] {
 			document->cancel();

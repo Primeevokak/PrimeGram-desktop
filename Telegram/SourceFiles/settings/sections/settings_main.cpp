@@ -6,7 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_main.h"
-#include "settings/sections/settings_prime_tgws.h"
+#include "prime/prime_banner.h"
+#include "settings/sections/settings_prime.h"
 #include "prime/prime_text.h"
 
 #include "settings/settings_common_session.h"
@@ -381,6 +382,27 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		});
 	}
 
+	builder.add([=](const WidgetContext &ctx) {
+		auto banner = object_ptr<Prime::Banner>(ctx.container);
+		banner->setClickedCallback([=] {
+			showOther(PrimeMain::Id());
+		});
+		return SectionBuilder::WidgetToAdd{ .widget = std::move(banner) };
+	}, [] {
+		return SearchEntry{
+			.id = u"main/primegram"_q,
+			.title = u"PrimeGram"_q,
+			.keywords = {
+				u"tgws"_q,
+				u"proxy"_q,
+				u"primegram"_q,
+				u"vpn"_q,
+				u"big files"_q,
+				u"auto-delete"_q,
+			},
+		};
+	});
+
 	builder.addSectionButton({
 		.title = tr::lng_settings_section_notify(),
 		.targetSection = NotificationsId(),
@@ -441,13 +463,6 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.targetSection = AdvancedId(),
 		.icon = { &st::menuIconManage },
 		.keywords = { u"performance"_q, u"proxy"_q, u"experimental"_q },
-	});
-
-	builder.addSectionButton({
-		.title = Prime::TextValue("PrimeGram TgWs", "PrimeGram TgWs"),
-		.targetSection = PrimeTgWs::Id(),
-		.icon = { &st::menuIconNetwork },
-		.keywords = { u"tgws"_q, u"proxy"_q, u"primegram"_q, u"vpn"_q },
 	});
 
 	builder.addSectionButton({

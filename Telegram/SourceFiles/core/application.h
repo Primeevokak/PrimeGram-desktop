@@ -22,6 +22,14 @@ namespace Prime::TgWs {
 class Manager;
 } // namespace Prime::TgWs
 
+namespace Prime::BigFile {
+class Manager;
+} // namespace Prime::BigFile
+
+namespace Prime {
+class Hub;
+} // namespace Prime
+
 namespace Platform {
 class Integration;
 } // namespace Platform
@@ -226,6 +234,8 @@ public:
 	void startSettingsAndBackground();
 	[[nodiscard]] Settings &settings();
 	[[nodiscard]] Prime::TgWs::Manager &tgws();
+	[[nodiscard]] Prime::BigFile::Manager &bigFile();
+	[[nodiscard]] Prime::Hub &prime();
 	[[nodiscard]] const Settings &settings() const;
 	void saveSettingsDelayed(crl::time delay = kDefaultSaveDelay);
 	void saveSettings();

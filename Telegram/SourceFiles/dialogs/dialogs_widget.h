@@ -198,6 +198,7 @@ private:
 		not_null<SearchProcessState*> process,
 		bool cacheResults = false);
 	void peerSearchReceived(Api::PeerSearchResult result);
+	void primeResolve(const QString &query);
 	void escape();
 	void submit();
 	void cancelSearchRequest();
@@ -427,6 +428,9 @@ private:
 	mtpRequestId _topicSearchRequest = 0;
 
 	QString _searchQuery;
+	PeerData *_primeFound = nullptr;
+	QString _primeFoundQuery;
+	Api::PeerSearchResult _primeLastResult;
 	PeerData *_searchQueryFrom = nullptr;
 	std::vector<Data::ReactionId> _searchQueryTags;
 	ChatSearchTab _searchQueryTab = {};

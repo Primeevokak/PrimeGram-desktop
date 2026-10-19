@@ -134,6 +134,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_boxes.h"
 #include "styles/style_share_box.h"
 #include "styles/style_window.h" // st::windowMinWidth
+#include "prime/prime_boxes.h"
+#include "prime/prime_text.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_premium.h"
 #include "styles/style_wallet.h"
@@ -316,6 +318,7 @@ private:
 	void addClearHistory();
 	void addDeleteChat();
 	void addLeaveChat();
+	void addPrimeActions();
 	void addJoinChat();
 	void addTopicLink();
 	void addManageTopic();
@@ -908,6 +911,28 @@ void Filler::addLeaveChat() {
 		.icon = &st::menuIconLeaveAttention,
 		.isAttention = true,
 	});
+}
+
+void Filler::addPrimeActions() {
+	if (_topic || _sublist) {
+		return;
+	}
+	const auto controller = _controller;
+	const auto peer = _peer;
+	const auto channel = peer->asChannel();
+	const auto chat = peer->asChat();
+	if ((channel && channel->amIn()) || (chat && chat->amIn())) {
+		_addAction(
+			Prime::Text("Temporary subscription", "Временная подписка"),
+			[=] { Prime::ShowTempSubBox(controller, peer); },
+			&st::menuIconTimer);
+	}
+	_addAction(
+		Prime::Text(
+			"Auto-delete my messages",
+			"Автоудаление моих сообщений"),
+		[=] { Prime::ShowAutoDeleteChatBox(controller, peer); },
+		&st::menuIconTTL);
 }
 
 void Filler::addJoinChat() {
@@ -1951,6 +1976,7 @@ void Filler::fillHistoryActions() {
 	addDirectMessages();
 	addExportChat();
 	addTranslate();
+	addPrimeActions();
 	addReport();
 	addClearHistory();
 	addDeleteChat();

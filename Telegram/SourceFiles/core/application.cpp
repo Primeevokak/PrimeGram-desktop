@@ -60,6 +60,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/crash_reports.h"
 #include "main/main_account.h"
 #include "main/main_domain.h"
+#include "prime/bigfile/bigfile_manager.h"
+#include "prime/prime_hub.h"
 #include "prime/tgws/tgws_manager.h"
 #include "main/main_session.h"
 #include "media/view/media_view_overlay_widget.h"
@@ -158,6 +160,8 @@ struct Application::Private {
 	Settings settings;
 	std::unique_ptr<ProxyRotationManager> proxyRotation;
 	std::unique_ptr<Prime::TgWs::Manager> tgws;
+	std::unique_ptr<Prime::BigFile::Manager> bigFile;
+	std::unique_ptr<Prime::Hub> prime;
 };
 
 Application::Application()
@@ -188,6 +192,8 @@ Application::Application()
 	Ui::Integration::Set(&_private->uiIntegration);
 	_private->proxyRotation = std::make_unique<ProxyRotationManager>();
 	_private->tgws = std::make_unique<Prime::TgWs::Manager>();
+	_private->bigFile = std::make_unique<Prime::BigFile::Manager>();
+	_private->prime = std::make_unique<Prime::Hub>();
 
 	_platformIntegration->init();
 
@@ -286,6 +292,8 @@ Application::~Application() {
 
 	_private->proxyRotation = nullptr;
 	_domain->finish();
+	_private->prime = nullptr;
+	_private->bigFile = nullptr;
 	_private->tgws = nullptr;
 	MTP::WebProxy::Transport::Shutdown();
 
@@ -324,6 +332,8 @@ void Application::run() {
 	ValidateScale();
 
 	_private->tgws->start(); // Depends on app settings being read.
+	_private->bigFile->start();
+	_private->prime->start();
 	refreshGlobalProxy();
 
 	if (const auto old = Local::oldSettingsVersion(); old < AppVersion) {
@@ -846,6 +856,14 @@ bool Application::eventFilter(QObject *object, QEvent *e) {
 
 Prime::TgWs::Manager &Application::tgws() {
 	return *_private->tgws;
+}
+
+Prime::BigFile::Manager &Application::bigFile() {
+	return *_private->bigFile;
+}
+
+Prime::Hub &Application::prime() {
+	return *_private->prime;
 }
 
 Settings &Application::settings() {
