@@ -48,14 +48,30 @@ void Check(
 	return false;
 }
 
+[[nodiscard]] QString LanguageToCode(QLocale::Language language) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return QLocale::languageToCode(language);
+#else
+	return QLocale(language).bcp47Name();
+#endif
+}
+
+[[nodiscard]] QLocale::Language CodeToLanguage(const QString &code) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return QLocale::codeToLanguage(code);
+#else
+	return QLocale(code).language();
+#endif
+}
+
 [[nodiscard]] QByteArray OldFormatBlob(const Core::Settings &from) {
 	const auto full = from.serialize();
-	const auto translateToCode = QLocale::languageToCode(
+	const auto translateToCode = LanguageToCode(
 		QLocale::Language(from.translateTo().value));
 	auto tail = sizeof(qint32) // format marker
 		+ sizeof(qint32); // skip list count
 	for (const auto &id : from.skipTranslationLanguages()) {
-		const auto code = QLocale::languageToCode(id.value);
+		const auto code = LanguageToCode(id.value);
 		tail += sizeof(quint32) + code.size() * sizeof(ushort);
 	}
 	tail += sizeof(quint32) + translateToCode.size() * sizeof(ushort);
@@ -123,11 +139,11 @@ void CheckTable(LangIdsMigrationReport &report) {
 
 	for (auto v = 2; v != int(QLocale::LastLanguage); ++v) {
 		const auto language = QLocale::Language(v);
-		const auto code = QLocale::languageToCode(language);
+		const auto code = LanguageToCode(language);
 		Check(report, !code.isEmpty(), u"empty code"_q);
 		Check(
 			report,
-			QLocale::codeToLanguage(code) == language,
+			CodeToLanguage(code) == language,
 			u"code roundtrip"_q);
 	}
 }
