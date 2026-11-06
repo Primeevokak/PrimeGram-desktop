@@ -65,6 +65,14 @@ struct Frame {
 		>= QApplication::startDragDistance();
 }
 
+[[nodiscard]] QPointF MouseGlobalPos(not_null<const QMouseEvent*> e) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return e->globalPosition();
+#else
+	return QPointF(e->globalPos());
+#endif
+}
+
 [[nodiscard]] bool Presented(const CardFold &fold) {
 	return fold.valid && (fold.opacity > 0.);
 }
@@ -434,7 +442,7 @@ base::EventFilterResult CardStickerEditor::mousePress(
 	cancelPress();
 	finishTravel();
 	const auto fold = _host.fold();
-	const auto global = e->globalPosition();
+	const auto global = MouseGlobalPos(e);
 	const auto point = bodyPoint(global);
 	if (OnChip(fold, point)) {
 		// Deselecting may move the input, so let it take this press first.
@@ -466,7 +474,7 @@ base::EventFilterResult CardStickerEditor::mouseMove(
 		cancelPress();
 		return Result::Cancel;
 	}
-	const auto global = e->globalPosition();
+	const auto global = MouseGlobalPos(e);
 	if (Crossed(_press->origin, global.toPoint())) {
 		_press->crossed = true;
 	}
@@ -500,7 +508,7 @@ base::EventFilterResult CardStickerEditor::mouseRelease(
 		cancelPress();
 		return Result::Cancel;
 	}
-	const auto global = e->globalPosition();
+	const auto global = MouseGlobalPos(e);
 	if (Crossed(_press->origin, global.toPoint())) {
 		_press->crossed = true;
 	}
