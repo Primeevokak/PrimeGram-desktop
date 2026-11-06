@@ -26,6 +26,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "boxes/sticker_set_box.h"
 #include "boxes/translate_box.h"
 #include "ui/boxes/confirm_box.h"
+#include <QtGui/QScreen>
 #include "base/platform/base_platform_info.h"
 #include "base/qt/qt_common_adapters.h"
 #include "base/qt/qt_key_modifiers.h"
@@ -2613,7 +2614,13 @@ void InnerWidget::showUnbanMenu(
 		}
 		if (weakParent) {
 			const auto menuWidget = weakParent->menu();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			const auto globalPoint = mouse->globalPosition().toPoint();
+			const auto globalPosF = mouse->globalPosition();
+#else
+			const auto globalPoint = mouse->globalPos();
+			const auto globalPosF = QPointF(globalPoint);
+#endif
 			const auto local = menuWidget->mapFromGlobal(globalPoint);
 			const auto overItem = (menuWidget->childAt(local) != nullptr);
 			if (overItem || (e->type() == QEvent::MouseMove)) {
@@ -2621,7 +2628,7 @@ void InnerWidget::showUnbanMenu(
 					e->type(),
 					local,
 					menuWidget->window()->mapFromGlobal(globalPoint),
-					mouse->globalPosition(),
+					globalPosF,
 					mouse->button(),
 					mouse->buttons(),
 					mouse->modifiers());
