@@ -2160,7 +2160,11 @@ std::optional<FlightPose> CollectiblesGrid::squarePose(
 		return std::nullopt;
 	}
 	return FlightPose{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		.center = mapTo(_host.body.get(), center),
+#else
+		.center = QPointF(mapTo(_host.body.get(), center.toPoint())),
+#endif
 		.side = side,
 	};
 }

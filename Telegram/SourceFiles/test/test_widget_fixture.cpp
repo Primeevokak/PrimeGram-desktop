@@ -330,7 +330,7 @@ void Row(const QString &marker, const QJsonObject &fields) {
 }
 
 [[nodiscard]] QString WindowStateText(Qt::WindowStates states) {
-	return u"0x"_q + QString::number(WithoutActive(states).toInt(), 16);
+	return u"0x"_q + QString::number(int(WithoutActive(states)), 16);
 }
 
 [[nodiscard]] ::MainWindow *WindowOf(const WidgetFixture &state) {

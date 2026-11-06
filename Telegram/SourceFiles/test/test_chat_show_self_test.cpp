@@ -432,7 +432,7 @@ void DeliverLeave(not_null<QWidget*> list) {
 }
 
 [[nodiscard]] QString WindowStateText(Qt::WindowStates states) {
-	return u"0x"_q + QString::number(WithoutActive(states).toInt(), 16);
+	return u"0x"_q + QString::number(int(WithoutActive(states)), 16);
 }
 
 [[nodiscard]] ::MainWindow *WindowOf(const ShowSelfTest &state) {
