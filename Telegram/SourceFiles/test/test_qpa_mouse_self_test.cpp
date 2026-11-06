@@ -2395,7 +2395,7 @@ QpaMouseEnd ClickThrough(QpaMouseSequence &sequence, QPoint point) {
 		return {};
 	}
 	const auto local = QPointF(point);
-	const auto global = top->QWidget::mapToGlobal(local);
+	const auto global = top->QWidget::mapToGlobal(point);
 	if (!convert) {
 		return {
 			.nativeLocal = local,
@@ -2454,7 +2454,7 @@ void RunCoordinates(not_null<State*> state) {
 	}
 	leg.dpr = window->devicePixelRatio();
 	leg.factor = ConversionFactor(window);
-	leg.origin = top->QWidget::mapToGlobal(QPointF());
+	leg.origin = top->QWidget::mapToGlobal(QPoint());
 	const auto point = CoordinatePoint(pad->geometry(), leg.factor);
 	if (!point) {
 		leg.refusal = u"no point P of the pad %1 lands inside it again "
