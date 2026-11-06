@@ -18,6 +18,11 @@ namespace Prime {
 	return QString::fromUtf8(russian ? ru : en);
 }
 
+[[nodiscard]] inline QString Text(const QString &en, const QString &ru) {
+	const auto russian = Lang::GetInstance().id().startsWith(u"ru"_q);
+	return russian ? ru : en;
+}
+
 [[nodiscard]] inline rpl::producer<QString> TextValue(
 		const char *en,
 		const char *ru) {

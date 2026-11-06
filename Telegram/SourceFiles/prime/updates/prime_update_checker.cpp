@@ -2,6 +2,7 @@
 
 #include "core/version.h"
 #include "ui/boxes/confirm_box.h"
+#include "boxes/abstract_box.h"
 #include "ui/toast/toast.h"
 #include "core/click_handler_types.h"
 #include "base/debug_log.h"
