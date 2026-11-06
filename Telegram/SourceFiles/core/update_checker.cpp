@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/update_checker.h"
+#include "prime/updates/prime_update_checker.h"
 
 #include "platform/platform_specific.h"
 #include "base/platform/base_platform_info.h"
@@ -1617,6 +1618,26 @@ Updater::Updater()
 	isLatest() | rpl::on_next([=] {
 		handleLatest();
 	}, _lifetime);
+
+	Prime::Updates::Checker::Instance().state(
+	) | rpl::on_next([=](Prime::Updates::State state) {
+		switch (state) {
+		case Prime::Updates::State::Checking:
+			_checking.fire({});
+			break;
+		case Prime::Updates::State::Latest:
+			_isLatest.fire({});
+			break;
+		case Prime::Updates::State::Error:
+			_failed.fire({});
+			break;
+		case Prime::Updates::State::Available:
+			_ready.fire({});
+			break;
+		default:
+			break;
+		}
+	}, _lifetime);
 }
 
 rpl::producer<> Updater::checking() const {
@@ -1756,22 +1777,8 @@ void Updater::start(bool forceWait) {
 		}
 #endif // !Q_OS_WIN && !Q_OS_MAC
 	} else if (sendRequest) {
-		if (BuildIsCanary) {
-			// Canary builds discover updates only through their own MTP
-			// channels, the v1 HTTP feed serves other channels.
-			startImplementation(&_httpImplementation, nullptr);
-		} else {
-			startImplementation(
-				&_httpImplementation,
-				std::make_unique<HttpChecker>(_testing));
-		}
-		startImplementation(
-			&_mtpImplementation,
-			std::make_unique<MtpChecker>(
-				LookupCanaryPrivateSession(_session),
-				_testing));
-
-		_checking.fire({});
+		cSetLastUpdateCheck(base::unixtime::now());
+		Prime::Updates::Checker::Instance().check(forceWait);
 	} else {
 		_timer.callOnce((updateInSecs + 5) * crl::time(1000));
 	}

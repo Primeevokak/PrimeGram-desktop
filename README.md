@@ -85,10 +85,22 @@
      ```cmd
      build_telegram.bat release
      ```
+   - Для сборки и **упаковки релиза** (с цифровой подписью Prime INC и созданием архива для GitHub Releases):
+     ```cmd
+     build_telegram.bat package
+     ```
+   - Для отдельной **подписи бинарника**:
+     ```cmd
+     build_telegram.bat sign
+     ```
 
 Готовый файл `Telegram.exe` создаётся в папке:
 - `out/Debug/Telegram.exe` (Debug)
 - `out/Release/Telegram.exe` (Release)
+
+Готовый релизный архив для GitHub Releases:
+- `releases/PrimeGram-v7.4-x64-portable.zip`
+- `releases/SHA256SUMS.txt`
 
 ---
 

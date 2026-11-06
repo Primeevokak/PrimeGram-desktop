@@ -817,7 +817,7 @@ void InstallWindowLog(
 
 [[nodiscard]] QString EndStateText(const EndState &state) {
 	return u"buttons=%1 grabber=%2 hovered=[%3] clean=%4"_q.arg(
-		QString::number(state.buttons.toInt()),
+		QString::number(int(state.buttons)),
 		DescriptionText(state.grabber),
 		state.hovered.join(u"; "_q),
 		FlagText(state.clean()));
@@ -998,8 +998,8 @@ void PushPress(
 			QString::number(int(base::SafeRound(event.local.x()))),
 			QString::number(int(base::SafeRound(event.local.y()))),
 			QString::number(int(event.button)),
-			QString::number(event.buttons.toInt()),
-			QString::number(event.modifiers.toInt()),
+			QString::number(int(event.buttons)),
+			QString::number(int(event.modifiers)),
 			FlagText(event.spontaneous),
 			event.grabber);
 }
@@ -2040,6 +2040,7 @@ bool RawDeliver(
 	if (!parent || !window) {
 		return false;
 	}
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	const auto local = parent->mapTo(parent->window(), QPointF(point));
 	const auto global = parent->QWidget::mapToGlobal(QPointF(point));
 	return SendDirect(state->gesture, {
@@ -2048,6 +2049,16 @@ bool RawDeliver(
 		.type = type,
 		.settle = settle,
 	});
+#else
+	const auto local = parent->mapTo(parent->window(), point);
+	const auto global = parent->QWidget::mapToGlobal(point);
+	return SendDirect(state->gesture, {
+		.nativeLocal = QHighDpi::toNativePixels(local, window),
+		.nativeGlobal = QHighDpi::toNativePixels(global, window),
+		.type = type,
+		.settle = settle,
+	});
+#endif
 #else // !DESKTOP_APP_DISABLE_PRIVATE_QT_API
 	return false;
 #endif // DESKTOP_APP_DISABLE_PRIVATE_QT_API
@@ -2096,7 +2107,7 @@ QString CleanupRaw(State &state) {
 	gesture = RawGesture();
 	return u"held=%1 releaseSent=%2 buttonsCleared=%3 grabReleased=%4 "
 		u"leaveSent=%5"_q.arg(
-			QString::number(held.toInt()),
+			QString::number(int(held)),
 			FlagText(releaseSent),
 			FlagText(buttonsCleared),
 			FlagText(grabReleased),
