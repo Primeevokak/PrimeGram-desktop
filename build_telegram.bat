@@ -7,7 +7,7 @@ set "PATH=C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\Sys
 set TEMP=F:\Tporject\tmp
 set TMP=F:\Tporject\tmp
 call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat" -vcvars_ver=14.44
-set "PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja"
+set "PATH=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64;%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja"
 cd /d F:\Tporject\tdesktop
 
 if /i "%1"=="configure" (
@@ -19,8 +19,8 @@ if /i "%1"=="configure" (
 )
 
 if /i "%1"=="release" (
-    echo [PrimeGram] Building Release...
-    cmake --build out --config Release --target Telegram --parallel > F:\Tporject\build_release.log 2>&1
+    echo [PrimeGram] Building Release x64...
+    cmake --build out --config Release --target Telegram --parallel 8 > F:\Tporject\build_release.log 2>&1
     echo EXIT %errorlevel% >> F:\Tporject\build_release.log
     type F:\Tporject\build_release.log
     exit /b %errorlevel%
@@ -41,7 +41,7 @@ if /i "%1"=="sign" (
 
 if /i "%1"=="package" (
     echo [PrimeGram] Building and packaging Release for GitHub Releases...
-    cmake --build out --config Release --target Telegram --parallel
+    cmake --build out --config Release --target Telegram --parallel 8
     if errorlevel 1 (
         echo [ERROR] Release build failed!
         exit /b 1
