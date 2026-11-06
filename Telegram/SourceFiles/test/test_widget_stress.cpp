@@ -3024,8 +3024,8 @@ constexpr auto kControlManifest = R"json({"version":1,
 	const auto manifest = ControlManifest();
 	auto first = ControlLaunch(WidgetStressPass::Measure);
 	first.id = u"launch-ac"_q;
-	first.loads = { u"a"_q, u"c"_q };
-	first.notes = {};
+	first.loads = QStringList{ u"a"_q, u"c"_q };
+	first.notes = QStringList{};
 	const auto initial = MergeRunFile(
 		std::nullopt,
 		RunFileObject(first, {
@@ -3038,7 +3038,7 @@ constexpr auto kControlManifest = R"json({"version":1,
 	auto old = ControlLaunch(WidgetStressPass::Measure);
 	old.id = u"launch-b-old"_q;
 	old.date = u"2026-10-30T11:00:00Z"_q;
-	old.notes = {};
+	old.notes = QStringList{};
 	auto withOld = MergeRunFile(
 		initial.file,
 		RunFileObject(old, {
@@ -3054,7 +3054,7 @@ constexpr auto kControlManifest = R"json({"version":1,
 	auto rerun = ControlLaunch(WidgetStressPass::Measure);
 	rerun.id = u"launch-b-new"_q;
 	rerun.date = u"2026-10-30T12:00:00Z"_q;
-	rerun.notes = { u"rerun note"_q };
+	rerun.notes = QStringList{ u"rerun note"_q };
 	const auto fresh = RunFileObject(rerun, {
 		MarkedEntry(u"b/0"_q, u"new"_q),
 		MarkedEntry(u"b/1"_q, u"new"_q),
