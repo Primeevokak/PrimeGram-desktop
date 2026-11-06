@@ -84,3 +84,8 @@ secrets.local.bat
 /signing/
 
 push_to_github.bat
+
+
+# Release artifacts
+/releases/
+releases/
