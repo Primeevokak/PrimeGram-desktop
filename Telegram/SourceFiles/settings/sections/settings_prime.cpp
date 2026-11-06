@@ -17,10 +17,12 @@ the same license terms, see LEGAL in the repository root.
 #include "settings/sections/settings_prime_tgws.h"
 #include "settings/sections/settings_prime_voice.h"
 #include "prime/updates/prime_update_checker.h"
+#include "prime/mcp/prime_mcp_server.h"
 #include "core/version.h"
 #include "settings/settings_common.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/layers/generic_box.h"
+#include "ui/toast/toast.h"
 #include "ui/text/format_values.h"
 #include "ui/vertical_list.h"
 #include "ui/widgets/buttons.h"
@@ -28,6 +30,9 @@ the same license terms, see LEGAL in the repository root.
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
+
+#include <QtGui/QClipboard>
+#include <QtGui/QGuiApplication>
 
 namespace Settings {
 namespace {
@@ -118,6 +123,14 @@ void PrimeMain::setupContent(
 		{ &st::menuIconStorage }
 	)->addClickHandler([=] {
 		showOther(PrimeStorage::Id());
+	});
+	AddButtonWithIcon(
+		content,
+		TextValue("MCP Server (AI Integration)", "MCP Сервер (ИИ Интеграция)"),
+		st::settingsButton,
+		{ &st::menuIconNetwork }
+	)->addClickHandler([=] {
+		showOther(PrimeMcp::Id());
 	});
 	AddButtonWithLabel(
 		content,
@@ -314,6 +327,93 @@ void PrimeAutoDelete::setupContent(
 	});
 	Ui::AddSkip(content);
 
+	Ui::ResizeFitChild(this, content);
+}
+
+PrimeMcp::PrimeMcp(
+	QWidget *parent,
+	not_null<Window::SessionController*> controller)
+: Section(parent, controller) {
+	setupContent(controller);
+}
+
+rpl::producer<QString> PrimeMcp::title() {
+	return TextValue("MCP Server (AI)", "MCP Сервер (ИИ)");
+}
+
+void PrimeMcp::setupContent(
+		not_null<Window::SessionController*> controller) {
+	const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
+	auto &server = Prime::Mcp::Server::Instance();
+
+	Ui::AddSkip(content);
+	Ui::AddSubsectionTitle(
+		content,
+		TextValue("Model Context Protocol", "Model Context Protocol"));
+
+	const auto serverToggle = content->add(object_ptr<Button>(
+		content,
+		TextValue(
+			"Enable MCP Server (127.0.0.1:28888)",
+			"Включить MCP Сервер (127.0.0.1:28888)"),
+		st::settingsButtonNoIcon));
+	serverToggle->toggleOn(rpl::single(server.enabled()));
+	serverToggle->toggledValue(
+	) | rpl::on_next([&server](bool enabled) {
+		server.setEnabled(enabled);
+	}, serverToggle->lifetime());
+
+	Ui::AddSkip(content);
+	Ui::AddDividerText(
+		content,
+		TextValue(
+			"Local MCP server allows AI assistants (Cursor, Claude, Antigravity) to access chats and search messages in Telegram.",
+			"Локальный MCP-сервер позволяет ИИ-ассистентам (Cursor, Claude, Antigravity) читать чаты и искать сообщения в Telegram."));
+
+	Ui::AddSkip(content);
+	Ui::AddSubsectionTitle(
+		content,
+		TextValue("Permissions", "Разрешения доступа"));
+
+	const auto sendToggle = content->add(object_ptr<Button>(
+		content,
+		TextValue(
+			"Allow AI to send messages",
+			"Разрешить отправку сообщений через ИИ"),
+		st::settingsButtonNoIcon));
+	sendToggle->toggleOn(rpl::single(server.allowSend()));
+	sendToggle->toggledValue(
+	) | rpl::on_next([&server](bool allow) {
+		server.setAllowSend(allow);
+	}, sendToggle->lifetime());
+
+	const auto deleteToggle = content->add(object_ptr<Button>(
+		content,
+		TextValue(
+			"Allow AI to delete messages",
+			"Разрешить удаление сообщений через ИИ"),
+		st::settingsButtonNoIcon));
+	deleteToggle->toggleOn(rpl::single(server.allowDelete()));
+	deleteToggle->toggledValue(
+	) | rpl::on_next([&server](bool allow) {
+		server.setAllowDelete(allow);
+	}, deleteToggle->lifetime());
+
+	Ui::AddSkip(content);
+	AddButtonWithLabel(
+		content,
+		TextValue("Copy MCP Configuration", "Скопировать конфиг MCP"),
+		rpl::single(QString("JSON")),
+		st::settingsButton,
+		{ &st::menuIconDownload }
+	)->addClickHandler([&server] {
+		QGuiApplication::clipboard()->setText(server.configJson());
+		Ui::Toast::Show(Text(
+			"MCP configuration copied to clipboard!",
+			"Конфигурация MCP скопирована в буфер обмена!"));
+	});
+
+	Ui::AddSkip(content);
 	Ui::ResizeFitChild(this, content);
 }
 

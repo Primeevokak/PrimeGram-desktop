@@ -50,4 +50,17 @@ private:
 
 };
 
+class PrimeMcp : public Section<PrimeMcp> {
+public:
+	PrimeMcp(
+		QWidget *parent,
+		not_null<Window::SessionController*> controller);
+
+	[[nodiscard]] rpl::producer<QString> title() override;
+
+private:
+	void setupContent(not_null<Window::SessionController*> controller);
+
+};
+
 } // namespace Settings

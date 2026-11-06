@@ -1798,6 +1798,8 @@ PRIVATE
     prime/privacy/privacy_passcode.h
     prime/updates/prime_update_checker.cpp
     prime/updates/prime_update_checker.h
+    prime/mcp/prime_mcp_server.cpp
+    prime/mcp/prime_mcp_server.h
     prime/search/identity_search.cpp
     prime/search/identity_search.h
     prime/tempsub/tempsub_manager.cpp

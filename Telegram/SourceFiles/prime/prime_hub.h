@@ -11,6 +11,7 @@ the same license terms, see LEGAL in the repository root.
 #include "prime/e2e/e2e_manager.h"
 #include "prime/tempsub/tempsub_manager.h"
 #include "prime/whisper/whisper_manager.h"
+#include "prime/mcp/prime_mcp_server.h"
 
 namespace Prime {
 
@@ -22,6 +23,7 @@ public:
 		_tempSub.start();
 		_badges.start();
 		_e2e.start();
+		Mcp::Server::Instance().start();
 	}
 
 	[[nodiscard]] AutoDelete::Manager &autoDelete() {
@@ -38,6 +40,9 @@ public:
 	}
 	[[nodiscard]] Whisper::Manager &whisper() {
 		return _whisper;
+	}
+	[[nodiscard]] Mcp::Server &mcp() {
+		return Mcp::Server::Instance();
 	}
 
 private:
