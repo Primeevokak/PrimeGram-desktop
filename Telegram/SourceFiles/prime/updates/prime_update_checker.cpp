@@ -5,7 +5,7 @@
 #include "ui/toast/toast.h"
 #include "core/click_handler_types.h"
 #include "base/debug_log.h"
-#include "prime/prime_settings.h"
+#include "prime/prime_text.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
