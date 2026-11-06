@@ -3178,7 +3178,7 @@ constexpr auto kControlManifest = R"json({"version":1,
 	auto error = QString();
 	const auto selection = SelectLoads(manifest, { u"b"_q }, &error);
 	auto failed = MarkedEntry(u"b/1"_q, u"new"_q);
-	failed.runnerErrors = { u"the level's load wait timed out"_q };
+	failed.runnerErrors = QStringList{ u"the level's load wait timed out"_q };
 	const auto clean = AcceptanceRefusals(manifest, selection, {
 		MarkedEntry(u"b/0"_q, u"new"_q),
 		MarkedEntry(u"b/1"_q, u"new"_q),
