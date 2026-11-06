@@ -2600,7 +2600,11 @@ void InnerWidget::showUnbanMenu(
 			}
 			return base::EventFilterResult::Continue;
 		}
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		const auto global = mouse->globalPosition().toPoint();
+#else
+		const auto global = mouse->globalPos();
+#endif
 		const auto insideMenu = menu->geometry().contains(global);
 		const auto insideParent = weakParent
 			&& weakParent->geometry().contains(global);

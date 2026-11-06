@@ -1087,7 +1087,11 @@ QRectF CardStickerEditor::listsArea() const {
 
 QPointF CardStickerEditor::bodyPoint(QPointF global) const {
 	const auto body = static_cast<const QWidget*>(_host.body.get());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	return body->mapFromGlobal(global);
+#else
+	return QPointF(body->mapFromGlobal(global.toPoint()));
+#endif
 }
 
 OwnCard &CardStickerEditor::ownCard() const {
