@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_widget.h"
 
+#include "prime/tweaks/tweaks.h"
 #include "base/call_delayed.h"
 #include "base/qt/qt_key_modifiers.h"
 #include "base/options.h"
@@ -2866,6 +2867,7 @@ void Widget::updateStoriesVisibility() {
 		|| (widthAnimation && !suggestionsAnimation)
 		|| _childList
 		|| _stories->empty()
+		|| Prime::Tweaks::On(Prime::Tweaks::Flag::HideStories)
 		|| (pulledDown && hiddenAnimated);
 	const auto hidden = hiddenInstant || hiddenAnimated;
 	const auto changed = (_stories->toggledHidden() != hidden);
@@ -2902,7 +2904,10 @@ void Widget::updateStoriesTitleShown() {
 	}
 	const auto shown = !_widthAnimationCache.isNull()
 		? 0.
-		: (!_stories || _stories->empty() || _stories->toggledHidden())
+		: (!_stories
+			|| _stories->empty()
+			|| _stories->toggledHidden()
+			|| Prime::Tweaks::On(Prime::Tweaks::Flag::HideStories))
 		? 1.
 		: _stories->collapsedGeometryCurrent().expanded;
 	_subsectionTopBar->setTitleShownRatio(shown);

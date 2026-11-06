@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_badge.h"
+#include "prime/badges/badges.h"
 
 #include "data/data_changes.h"
 #include "data/data_emoji_statuses.h"
@@ -275,7 +276,8 @@ Data::CustomEmojiSizeTag Badge::sizeTag() const {
 }
 
 rpl::producer<Badge::Content> BadgeContentForPeer(not_null<PeerData*> peer) {
-	const auto statusOnlyForPremium = peer->isUser();
+	const auto statusOnlyForPremium = peer->isUser()
+		&& !Prime::Badges::HasBadge(peer);
 	return rpl::combine(
 		BadgeValue(peer),
 		EmojiStatusIdValue(peer)

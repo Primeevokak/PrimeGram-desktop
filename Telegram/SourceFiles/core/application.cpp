@@ -952,7 +952,11 @@ auto Application::proxyChanges() const -> rpl::producer<ProxyChange> {
 }
 
 void Application::badMtprotoConfigurationError() {
-	if (settings().proxy().isEnabled() && !_badProxyDisableBox) {
+	// The built-in TgWs proxy is ours: a bad dc_id answered for one special
+	// DC must not switch it off.
+	if (settings().proxy().isEnabled()
+		&& !_badProxyDisableBox
+		&& !_private->tgws->isManaged(settings().proxy().selected())) {
 		const auto disableCallback = [=] {
 			setCurrentProxy(
 				settings().proxy().selected(),

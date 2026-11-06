@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_tag.h"
 
+#include "prime/tweaks/tweaks.h"
 #include "core/credits_amount.h"
 #include "lang/lang_keys.h"
 #include "ui/text/text.h"
@@ -918,6 +919,9 @@ int NonZeroPartToInt(QString value) {
 }
 
 ShortenedCount FormatCountToShort(int64 number, bool onlyK) {
+	if (Prime::Tweaks::On(Prime::Tweaks::Flag::ExactNumbers)) {
+		return { number, FormatCountDecimal(number), false };
+	}
 	auto result = ShortenedCount{ number };
 	const auto abs = std::abs(number);
 	const auto shorten = [&](int64 divider, char multiplier) {

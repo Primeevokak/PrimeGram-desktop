@@ -458,6 +458,14 @@ public:
 	[[nodiscard]] ItemPreview toPreview(ToPreviewOptions options) const;
 	[[nodiscard]] TextWithEntities inReplyText() const;
 	[[nodiscard]] const TextWithEntities &originalText() const;
+	// PrimeGram: shows other text than the message carries, for example
+	// the decrypted text of an end-to-end encrypted message.
+	void replaceTextLocally(TextWithEntities text) {
+		setTextValue(std::move(text), true);
+	}
+	void replaceReplyMarkupLocally(HistoryMessageMarkupData &&markup) {
+		setReplyMarkup(std::move(markup), false);
+	}
 	[[nodiscard]] const TextWithEntities &translatedText() const;
 	[[nodiscard]] TextWithEntities translatedTextWithLocalEntities() const;
 	[[nodiscard]] const std::vector<ClickHandlerPtr> &customTextLinks() const;

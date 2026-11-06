@@ -3,6 +3,19 @@
 cmake_minimum_required(VERSION 3.16)
 project(external_whisper C CXX)
 
+# whisper.cpp is useless without optimization: in a Debug build of the app
+# this code would run dozens of times slower, so it is always optimized.
+if (MSVC)
+    foreach (flags CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG)
+        string(REGEX REPLACE "/O[d12xs]" "" ${flags} "${${flags}}")
+        string(REGEX REPLACE "/Ob[0-3]" "" ${flags} "${${flags}}")
+        string(REPLACE "/RTC1" "" ${flags} "${${flags}}")
+        string(REPLACE "/JMC" "" ${flags} "${${flags}}")
+        string(REPLACE "/ZI" "/Zi" ${flags} "${${flags}}")
+        set(${flags} "${${flags}} /O2 /Ob2")
+    endforeach()
+endif()
+
 set(GGML_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GGML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GGML_OPENMP OFF CACHE BOOL "" FORCE)

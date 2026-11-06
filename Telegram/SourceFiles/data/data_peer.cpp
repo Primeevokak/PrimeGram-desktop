@@ -6,6 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer.h"
+#include "prime/tweaks/tweaks.h"
+#include "prime/badges/badges.h"
 
 #include "api/api_sensitive_content.h"
 #include "data/data_user.h"
@@ -1302,6 +1304,8 @@ Ui::PeerUserpicShape PeerData::userpicShape() const {
 		? Ui::PeerUserpicShape::Forum
 		: isMonoforum()
 		? Ui::PeerUserpicShape::Monoforum
+		: (Prime::Tweaks::AvatarShape() != Prime::Tweaks::kAvatarCircle)
+		? Ui::PeerUserpicShape::Forum
 		: Ui::PeerUserpicShape::Circle;
 }
 
@@ -1511,6 +1515,13 @@ void PeerData::setEmojiStatus(EmojiStatusId emojiStatusId, TimeId until) {
 }
 
 EmojiStatusId PeerData::emojiStatusId() const {
+	if (_emojiStatusId) {
+		return _emojiStatusId;
+	}
+	// PrimeGram badges are shown as custom emoji, like emoji statuses.
+	if (const auto id = Prime::Badges::BadgeEmojiId(this)) {
+		return { .documentId = DocumentId(id) };
+	}
 	return _emojiStatusId;
 }
 

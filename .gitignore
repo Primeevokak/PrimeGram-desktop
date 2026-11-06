@@ -37,9 +37,10 @@ compile_commands.json
 project.xcworkspace
 xcuserdata
 
-parts
-prime
-stage
+/parts
+/prime
+/stage
+!/Telegram/SourceFiles/prime/
 *.snap
 .snapcraft
 /snap/gui/*.png
@@ -74,3 +75,10 @@ settings.local.json
 
 # Generated changelog page (built by CI, deployed to GitHub Pages)
 /docs/changelog/
+
+# Local signing and secrets
+sign_exe.bat
+/sign_exe.bat
+secrets.local.bat
+/secrets.local.bat
+/signing/

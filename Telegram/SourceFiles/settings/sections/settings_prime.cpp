@@ -11,6 +11,9 @@ the same license terms, see LEGAL in the repository root.
 #include "prime/bigfile/bigfile_manager.h"
 #include "prime/prime_hub.h"
 #include "prime/prime_text.h"
+#include "settings/sections/settings_prime_interface.h"
+#include "settings/sections/settings_prime_privacy.h"
+#include "settings/sections/settings_prime_storage.h"
 #include "settings/sections/settings_prime_tgws.h"
 #include "settings/sections/settings_prime_voice.h"
 #include "settings/settings_common.h"
@@ -84,11 +87,35 @@ void PrimeMain::setupContent(
 	});
 	AddButtonWithIcon(
 		content,
+		TextValue("Interface and chats", "Интерфейс и чаты"),
+		st::settingsButton,
+		{ &st::menuIconChats }
+	)->addClickHandler([=] {
+		showOther(PrimeInterface::Id());
+	});
+	AddButtonWithIcon(
+		content,
+		TextValue("Privacy", "Приватность"),
+		st::settingsButton,
+		{ &st::menuIconLock }
+	)->addClickHandler([=] {
+		showOther(PrimePrivacy::Id());
+	});
+	AddButtonWithIcon(
+		content,
 		TextValue("Auto-delete messages", "Автоудаление сообщений"),
 		st::settingsButton,
 		{ &st::menuIconTTL }
 	)->addClickHandler([=] {
 		showOther(PrimeAutoDelete::Id());
+	});
+	AddButtonWithIcon(
+		content,
+		TextValue("Storage and cache", "Память и кэш"),
+		st::settingsButton,
+		{ &st::menuIconStorage }
+	)->addClickHandler([=] {
+		showOther(PrimeStorage::Id());
 	});
 	Ui::AddSkip(content);
 

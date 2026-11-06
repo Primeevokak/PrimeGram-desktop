@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer_values.h"
 
+#include "prime/tweaks/tweaks.h"
 #include "lang/lang_keys.h"
 #include "data/data_channel.h"
 #include "data/data_chat.h"
@@ -504,7 +505,9 @@ QString OnlineText(Data::LastseenStatus status, TimeId now) {
 		return tr::lng_status_lastseen_minutes(tr::now, lt_count, minutes);
 	}
 	const auto hours = (now - till) / 3600;
-	if (hours < 12) {
+	const auto relativeLimit = Prime::Tweaks::On(
+		Prime::Tweaks::Flag::RelativeLastSeen) ? 48 : 12;
+	if (hours < relativeLimit) {
 		return tr::lng_status_lastseen_hours(tr::now, lt_count, hours);
 	}
 	const auto onlineFull = base::unixtime::parse(till);

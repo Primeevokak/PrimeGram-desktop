@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_element.h"
 
+#include "prime/tweaks/tweaks.h"
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
 #include "history/view/history_view_service_message.h"
@@ -2969,7 +2970,8 @@ void Element::refreshReactions() {
 	using namespace Reactions;
 	auto reactionsData = InlineListDataFromMessage(this);
 	if (reactionsData.reactions.empty()
-		|| context() == Context::MediaEditor) {
+		|| context() == Context::MediaEditor
+		|| Prime::Tweaks::HideReactionsFor(history()->peer)) {
 		setReactions(nullptr);
 		return;
 	}

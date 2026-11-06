@@ -6,6 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "apiwrap.h"
+#include "prime/prime_text.h"
+#include "prime/prime_hub.h"
+#include "prime/e2e/e2e_manager.h"
 
 #include "api/api_authorizations.h"
 #include "api/api_attached_stickers.h"
@@ -4827,13 +4830,30 @@ void ApiWrap::sendMessage(
 
 		TextUtilities::Trim(sending);
 
+		auto e2eWire = std::optional<QString>();
+		{
+			using E2EKind = Prime::E2E::Manager::Outgoing::Kind;
+			const auto e2e = Core::App().prime().e2e().encryptOutgoing(
+				history,
+				sending.text,
+				newId);
+			if (e2e.kind == E2EKind::Blocked) {
+				Core::App().activeWindow()->showToast(Prime::Text(
+					"Encryption is not ready yet, wait for the other side",
+					"Шифрование ещё не готово, дождитесь собеседника"));
+				return;
+			} else if (e2e.kind == E2EKind::Encrypted) {
+				e2eWire = e2e.wire;
+			}
+		}
+
 		_session->data().registerMessageRandomId(randomId, newId);
 		_session->data().registerMessageSentData(
 			randomId,
 			peer->id,
 			sending.text);
 
-		MTPstring msgText(MTP_string(sending.text));
+		MTPstring msgText(MTP_string(e2eWire ? *e2eWire : sending.text));
 		auto flags = NewMessageFlags(peer);
 		auto sendFlags = MTPmessages_SendMessage::Flags(0);
 		auto mediaFlags = MTPmessages_SendMedia::Flags(0);
@@ -4882,10 +4902,12 @@ void ApiWrap::sendMessage(
 			sendFlags |= MTPmessages_SendMessage::Flag::f_silent;
 			mediaFlags |= MTPmessages_SendMedia::Flag::f_silent;
 		}
-		const auto sentEntities = Api::EntitiesToMTP(
-			_session,
-			sending.entities,
-			Api::ConvertOption::SkipLocal);
+		const auto sentEntities = e2eWire
+			? MTP_vector<MTPMessageEntity>()
+			: Api::EntitiesToMTP(
+				_session,
+				sending.entities,
+				Api::ConvertOption::SkipLocal);
 		if (!sentEntities.v.isEmpty()) {
 			sendFlags |= MTPmessages_SendMessage::Flag::f_entities;
 			mediaFlags |= MTPmessages_SendMedia::Flag::f_entities;
@@ -4946,6 +4968,9 @@ void ApiWrap::sendMessage(
 			.effectId = action.options.effectId,
 			.suggest = HistoryMessageSuggestInfo(action.options),
 		}, sending, media);
+		if (e2eWire || peer->isUser()) {
+			Core::App().prime().e2e().processLocalItem(lastMessage);
+		}
 		const auto done = [=](
 				const MTPUpdates &result,
 				const MTP::Response &response) {

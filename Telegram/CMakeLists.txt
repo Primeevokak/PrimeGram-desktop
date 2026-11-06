@@ -1713,6 +1713,16 @@ PRIVATE
     poll/poll_media_upload.h
     prime/autodelete/autodelete_manager.cpp
     prime/autodelete/autodelete_manager.h
+    prime/badges/badges.cpp
+    prime/badges/badges.h
+    prime/e2e/e2e_crypto.cpp
+    prime/e2e/e2e_crypto.h
+    prime/e2e/e2e_manager.cpp
+    prime/e2e/e2e_manager.h
+    prime/e2e/e2e_protocol.cpp
+    prime/e2e/e2e_protocol.h
+    prime/e2e/e2e_store.cpp
+    prime/e2e/e2e_store.h
     prime/bigfile/bigfile_assembler.cpp
     prime/bigfile/bigfile_assembler.h
     prime/bigfile/bigfile_format.cpp
@@ -1730,9 +1740,21 @@ PRIVATE
     prime/prime_cover.cpp
     prime/prime_cover.h
     prime/prime_text.h
+    prime/cache/prime_cache.cpp
+    prime/cache/prime_cache.h
+    prime/nowplaying/nowplaying_card.cpp
+    prime/nowplaying/nowplaying_card.h
+    prime/nowplaying/nowplaying_share.cpp
+    prime/nowplaying/nowplaying_share.h
+    prime/nowplaying/nowplaying_track.cpp
+    prime/nowplaying/nowplaying_track.h
+    prime/privacy/privacy_passcode.cpp
+    prime/privacy/privacy_passcode.h
     prime/search/identity_search.cpp
     prime/search/identity_search.h
     prime/tempsub/tempsub_manager.cpp
+    prime/tweaks/tweaks.cpp
+    prime/tweaks/tweaks.h
     prime/tempsub/tempsub_manager.h
     prime/whisper/whisper_audio.cpp
     prime/whisper/whisper_audio.h
@@ -2000,6 +2022,12 @@ PRIVATE
     settings/sections/settings_notifications.h
     settings/sections/settings_prime.cpp
     settings/sections/settings_prime.h
+    settings/sections/settings_prime_interface.cpp
+    settings/sections/settings_prime_interface.h
+    settings/sections/settings_prime_privacy.cpp
+    settings/sections/settings_prime_privacy.h
+    settings/sections/settings_prime_storage.cpp
+    settings/sections/settings_prime_storage.h
     settings/sections/settings_prime_tgws.cpp
     settings/sections/settings_prime_voice.cpp
     settings/sections/settings_prime_voice.h

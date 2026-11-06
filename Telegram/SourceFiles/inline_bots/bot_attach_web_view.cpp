@@ -6,6 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "inline_bots/bot_attach_web_view.h"
+#include "prime/nowplaying/nowplaying_share.h"
+#include "prime/prime_text.h"
 
 #include "api/api_blocked_peers.h"
 #include "api/api_common.h"
@@ -3024,6 +3026,16 @@ std::unique_ptr<Ui::DropdownMenu> MakeAttachBotsMenu(
 		raw->addAction(tr::lng_attach_document(tr::now), [=] {
 			attach(false);
 		}, &st::menuIconFile);
+	}
+	if (Data::CanSend(peer, ChatRestriction::SendPhotos, false)
+		|| Data::CanSend(peer, ChatRestriction::SendOther, false)) {
+		++minimal;
+		raw->addAction(
+			Prime::Text("Now playing", "Сейчас играет"),
+			[=] {
+				Prime::NowPlaying::ShowShareBox(controller, actionFactory());
+			},
+			&st::menuIconSoundOn);
 	}
 	const auto moneyIndex = int(raw->actions().size());
 	if (peer->canCreatePolls(false)) {

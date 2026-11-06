@@ -135,6 +135,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_share_box.h"
 #include "styles/style_window.h" // st::windowMinWidth
 #include "prime/prime_boxes.h"
+#include "prime/prime_hub.h"
 #include "prime/prime_text.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_premium.h"
@@ -924,6 +925,21 @@ void Filler::addPrimeActions() {
 	if ((channel && channel->amIn()) || (chat && chat->amIn())) {
 		_addAction(
 			Prime::Text("Temporary subscription", "Временная подписка"),
+			[=] { Prime::ShowTempSubBox(controller, peer); },
+			&st::menuIconTimer);
+	}
+	if (const auto user = peer->asUser();
+		user && Core::App().prime().e2e().eligible(user)) {
+		_addAction(
+			Prime::Text("Encrypted chat", "Защищённый чат"),
+			[=] { Prime::ShowE2EBox(controller, user); },
+			&st::menuIconLock);
+	}
+	if (channel && !channel->amIn()) {
+		_addAction(
+			Prime::Text(
+				"Subscribe for a limited time",
+				"Подписаться на время"),
 			[=] { Prime::ShowTempSubBox(controller, peer); },
 			&st::menuIconTimer);
 	}

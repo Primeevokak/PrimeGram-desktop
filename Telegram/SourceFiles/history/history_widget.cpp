@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_widget.h"
+#include "prime/prime_boxes.h"
 
 #include "api/api_compose_with_ai.h"
 #include "api/api_editing.h"
@@ -447,7 +448,11 @@ HistoryWidget::HistoryWidget(
 	});
 	_unblock->addClickHandler([=] { unblockUser(); });
 	_botStart->addClickHandler([=] { sendBotStartCommand(); });
-	_joinChannel->addClickHandler([=] { joinChannel(); });
+	Prime::SetupTempJoinButton(
+		_joinChannel.data(),
+		controller,
+		[=] { return _peer ? _peer->asChannel() : nullptr; },
+		[=] { joinChannel(); });
 	_muteUnmute->addClickHandler([=] { toggleMuteUnmute(); });
 	setupGiftToChannelButton();
 	setupDirectMessageButton();

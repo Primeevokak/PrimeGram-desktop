@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/userpic_view.h"
 
+#include "prime/tweaks/tweaks.h"
 #include "ui/empty_userpic.h"
 #include "ui/painter.h"
 #include "ui/image/image_prepare.h"
@@ -32,7 +33,9 @@ constexpr auto kGap = 0.02; // Tunable.
 } // namespace
 
 float64 ForumUserpicRadiusMultiplier() {
-	return 0.3;
+	return (Prime::Tweaks::AvatarShape() == Prime::Tweaks::kAvatarSquare)
+		? 0.12
+		: 0.3;
 }
 
 void PaintCommunityUserpicEffect(

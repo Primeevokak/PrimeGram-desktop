@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/local_url_handlers.h"
+#include "prime/prime_boxes.h"
 
 #include "core/deep_links/deep_links_router.h"
 #include "api/api_confirm_phone.h"
@@ -299,6 +300,19 @@ bool ShowTheme(
 		fromMessageId);
 	controller->window().activate();
 	return true;
+}
+
+bool HandlePrimeE2E(
+		Window::SessionController *controller,
+		const Match &match,
+		const QVariant &context) {
+	if (!controller) {
+		return false;
+	}
+	return Prime::HandleE2ELink(
+		controller,
+		match->captured(1),
+		match->captured(2).toULongLong());
 }
 
 bool ShowAiStyle(
@@ -1775,6 +1789,10 @@ bool TryRouterForLocalUrl(
 
 const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 	static auto Result = std::vector<LocalUrlHandler>{
+		{
+			u"^prime_e2e\\?a=([a-z]+)&u=([0-9]+)$"_q,
+			HandlePrimeE2E
+		},
 		{
 			u"^join/?\\?invite=([a-zA-Z0-9\\.\\_\\-]+)(&|$)"_q,
 			JoinGroupByHash

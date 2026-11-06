@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_message.h"
+#include "prime/badges/badges.h"
 
 #include "api/api_suggest_post.h"
 #include "api/api_transcribes.h"
@@ -5506,6 +5507,7 @@ void Message::validateFromNameText(PeerData *from) const {
 			Ui::NameTextOptions());
 	}
 	if (from->isPremium()
+		|| Prime::Badges::HasBadge(from)
 		|| (from->isChannel()
 			&& from->emojiStatusId()
 			&& from != history()->peer)) {

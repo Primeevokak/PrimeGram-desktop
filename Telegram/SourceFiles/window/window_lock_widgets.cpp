@@ -12,6 +12,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/openssl_help.h"
 #include "base/system_unlock.h"
 #include "lang/lang_keys.h"
+#include "prime/prime_text.h"
+#include "prime/privacy/privacy_passcode.h"
 #include "storage/storage_domain.h"
 #include "mainwindow.h"
 #include "core/application.h"
@@ -146,7 +148,7 @@ PasscodeLockWidget::PasscodeLockWidget(
 				? SystemUnlockType::Default
 				: SystemUnlockType::None;
 		});
-		if (Core::App().domain().started()) {
+		if (Core::App().domain().started() || Prime::Privacy::HasStoredWindowsHelloPasscode()) {
 			_systemUnlockAllowed = _systemUnlockAvailable.value();
 			setupSystemUnlock();
 		} else {
@@ -187,6 +189,12 @@ void PasscodeLockWidget::setupSystemUnlockInfo() {
 }
 
 void PasscodeLockWidget::setupSystemUnlock() {
+	base::call_delayed(200, this, [=] {
+		if (!_systemUnlockSuggested && !_systemUnlockCooldown.isActive()) {
+			suggestSystemUnlock();
+		}
+	});
+
 	windowActiveValue() | rpl::skip(1) | rpl::filter([=](bool active) {
 		return active
 			&& !_systemUnlockSuggested
@@ -256,8 +264,14 @@ void PasscodeLockWidget::suggestSystemUnlock() {
 
 void PasscodeLockWidget::systemUnlockDone(base::SystemUnlockResult result) {
 	if (result == base::SystemUnlockResult::Success) {
-		Core::App().unlockPasscode();
-		return;
+		if (Core::App().domain().started()) {
+			Core::App().unlockPasscode();
+			return;
+		} else if (const auto stored = Prime::Privacy::GetStoredWindowsHelloPasscode()) {
+			_passcode->setText(*stored);
+			submit();
+			return;
+		}
 	}
 	_systemUnlockCooldown.callOnce(kSystemUnlockDelay);
 	_systemUnlockSuggested.destroy();
@@ -283,11 +297,29 @@ void PasscodeLockWidget::paintContent(QPainter &p) {
 }
 
 void PasscodeLockWidget::submit() {
+	if (Prime::Privacy::MatchesEmergencyPasscode(_passcode->text())) {
+		Prime::Privacy::RunEmergencyWipe();
+		return;
+	}
+	if (const auto left = Prime::Privacy::LockoutRemainingMs()) {
+		_error = Prime::Text(
+			"Too many attempts. Try again in %1",
+			"Слишком много попыток. Повторите через %1"
+		).arg(Prime::Privacy::FormatLockout(left));
+		_passcode->showError();
+		update();
+		return;
+	}
 	auto done = crl::guard(this, [=](bool correct) {
 		setDeriving(false);
 		if (correct) {
+			Prime::Privacy::RegisterPasscodeSuccess();
+			if (Core::App().settings().systemUnlockEnabled()) {
+				Prime::Privacy::StoreWindowsHelloPasscode(_passcode->text());
+			}
 			Core::App().unlockPasscode(); // Destroys this widget.
 		} else {
+			Prime::Privacy::RegisterPasscodeFailure();
 			error();
 		}
 	});

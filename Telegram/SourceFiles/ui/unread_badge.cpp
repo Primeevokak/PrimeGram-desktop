@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/unread_badge.h"
+#include "prime/badges/badges.h"
 
 #include "data/data_emoji_statuses.h"
 #include "data/data_peer.h"
@@ -251,7 +252,9 @@ int PeerBadge::drawGetWidth(Painter &p, Descriptor &&descriptor) {
 		&& peer->session().premiumBadgesShown();
 	const auto emojiStatus = premiumMark
 		&& peer->emojiStatusId()
-		&& (peer->isPremium() || peer->isChannel());
+		&& (peer->isPremium()
+			|| peer->isChannel()
+			|| Prime::Badges::HasBadge(peer));
 	const auto premiumStar = premiumMark
 		&& !emojiStatus
 		&& peer->isPremium();

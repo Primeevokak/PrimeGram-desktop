@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_premium.h"
+#include "prime/badges/badges.h"
 
 #include "boxes/premium_preview_box.h"
 #include "boxes/sticker_set_box.h"
@@ -1844,6 +1845,10 @@ void ShowGiftPremium(
 void ShowEmojiStatusPremium(
 		not_null<Window::SessionController*> controller,
 		not_null<PeerData*> peer) {
+	if (const auto text = Prime::Badges::BadgeText(peer); !text.isEmpty()) {
+		controller->showToast(text);
+		return;
+	}
 	if (const auto unique = peer->emojiStatusId().collectible.get()) {
 		Core::ResolveAndShowUniqueGift(controller->uiShow(), unique->slug);
 	} else {
