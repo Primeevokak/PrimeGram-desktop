@@ -13,7 +13,7 @@ if /i "%1"=="release" (
     cmake --build out --config Release --target Telegram --parallel > F:\Tporject\build_release.log 2>&1
     echo EXIT %errorlevel% >> F:\Tporject\build_release.log
 ) else if /i "%1"=="configure" (
-    call Telegram\configure.bat x64 -D TDESKTOP_API_ID=%TG_API_ID% -D TDESKTOP_API_HASH=%TG_API_HASH% > F:\Tporject\configure.log 2>&1
+    call Telegram\configure.bat x64 qt5 -D TDESKTOP_API_ID=%TG_API_ID% -D TDESKTOP_API_HASH=%TG_API_HASH% > F:\Tporject\configure.log 2>&1
     echo EXIT %errorlevel% >> F:\Tporject\configure.log
 ) else (
     cmake --build out --config Debug --target Telegram --parallel > F:\Tporject\build.log 2>&1
