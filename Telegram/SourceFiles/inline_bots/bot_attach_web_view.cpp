@@ -3080,7 +3080,6 @@ std::unique_ptr<Ui::DropdownMenu> MakeAttachBotsMenu(
 	}
 	if (Data::CanSend(peer, ChatRestriction::SendPhotos, false)
 		|| Data::CanSend(peer, ChatRestriction::SendOther, false)) {
-		++minimal;
 		raw->addAction(
 			Prime::Text("Now playing", "Сейчас играет"),
 			[=] {

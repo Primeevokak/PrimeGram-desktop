@@ -82,3 +82,5 @@ sign_exe.bat
 secrets.local.bat
 /secrets.local.bat
 /signing/
+
+push_to_github.bat
