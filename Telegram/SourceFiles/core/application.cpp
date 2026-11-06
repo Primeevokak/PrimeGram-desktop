@@ -997,8 +997,6 @@ void Application::badMtprotoConfigurationError(const MTP::ProxyData &proxy) {
 		_badProxyConfiguration.reset();
 	}
 }
-	}
-}
 
 void Application::startLocalStorage() {
 	Ui::GL::DetectLastCheckCrash();
