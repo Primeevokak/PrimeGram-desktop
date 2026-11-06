@@ -16,6 +16,8 @@ the same license terms, see LEGAL in the repository root.
 #include "settings/sections/settings_prime_storage.h"
 #include "settings/sections/settings_prime_tgws.h"
 #include "settings/sections/settings_prime_voice.h"
+#include "prime/updates/prime_update_checker.h"
+#include "core/version.h"
 #include "settings/settings_common.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/layers/generic_box.h"
@@ -116,6 +118,15 @@ void PrimeMain::setupContent(
 		{ &st::menuIconStorage }
 	)->addClickHandler([=] {
 		showOther(PrimeStorage::Id());
+	});
+	AddButtonWithLabel(
+		content,
+		TextValue("Check for updates", "Проверить обновления"),
+		rpl::single(QString("v%1").arg(AppVersionStr)),
+		st::settingsButton,
+		{ &st::menuIconDownload }
+	)->addClickHandler([=] {
+		Prime::Updates::Check(true);
 	});
 	Ui::AddSkip(content);
 

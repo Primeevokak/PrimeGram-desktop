@@ -2403,10 +2403,16 @@ QpaMouseEnd ClickThrough(QpaMouseSequence &sequence, QPoint point) {
 			.settle = true,
 		};
 	}
-#ifndef DESKTOP_APP_DISABLE_PRIVATE_QT_API
+#if !defined(DESKTOP_APP_DISABLE_PRIVATE_QT_API) && (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	return {
 		.nativeLocal = QHighDpi::toNativeLocalPosition(local, window),
 		.nativeGlobal = QHighDpi::toNativeGlobalPosition(global, window),
+		.settle = true,
+	};
+#elif !defined(DESKTOP_APP_DISABLE_PRIVATE_QT_API)
+	return {
+		.nativeLocal = QHighDpi::toNativeLocalPosition(local, window),
+		.nativeGlobal = QHighDpi::toNativePixels(global, window),
 		.settle = true,
 	};
 #else // !DESKTOP_APP_DISABLE_PRIVATE_QT_API

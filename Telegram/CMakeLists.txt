@@ -1796,6 +1796,8 @@ PRIVATE
     prime/nowplaying/nowplaying_track.h
     prime/privacy/privacy_passcode.cpp
     prime/privacy/privacy_passcode.h
+    prime/updates/prime_update_checker.cpp
+    prime/updates/prime_update_checker.h
     prime/search/identity_search.cpp
     prime/search/identity_search.h
     prime/tempsub/tempsub_manager.cpp

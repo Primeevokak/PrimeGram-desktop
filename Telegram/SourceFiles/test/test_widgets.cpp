@@ -404,7 +404,7 @@ void DeliverPressWithOrigin(
 		QMouseEvent &press,
 		PressOrigin &result) {
 	result.cursorBefore = QCursor::pos();
-	const auto exact = target->mapFromGlobal(QPointF(result.cursorBefore));
+	const auto exact = target->mapFromGlobal(result.cursorBefore);
 	result.displacement = QPoint(
 		int(std::floor(exact.x() - result.point.x() + 0.5)),
 		int(std::floor(exact.y() - result.point.y() + 0.5)));
